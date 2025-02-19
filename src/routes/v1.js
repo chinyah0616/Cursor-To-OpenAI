@@ -42,8 +42,28 @@ router.post('/chat/completions', async (req, res) => {
     const clientKey = generateHashed64Hex(authToken)
     const cursorClientVersion = "0.45.11"
 
+    const checkFeatureStatusResponse = fetch("https://api2.cursor.sh/aiserver.v1.AiService/CheckFeatureStatus", {
+      method: 'POST',
+      headers: {
+        'accept-encoding': 'gzip',
+        'authorization': `Bearer ${authToken}`,
+        'connect-protocol-version': '1',
+        'content-type': 'application/proto',
+        'user-agent': 'connect-es/1.6.1',
+        'x-client-key': clientKey,
+        'x-cursor-checksum': checksum,
+        'x-cursor-client-version': cursorClientVersion,
+        'x-cursor-timezone': 'Asia/Shanghai',
+        'x-ghost-mode': 'true',
+        'x-session-id': sessionid,
+        'Host': 'api2.cursor.sh',
+      },
+      // 0x0A 0x1D cppExistingUserMarketingPopup
+      body: Buffer.from('0A1D6370704578697374696E67557365724D61726B6574696E67506F707570', 'hex')
+    })
+    
     // Request the AvailableModels before StreamChat.
-    const availableModelsResponse = await fetch("https://api2.cursor.sh/aiserver.v1.AiService/AvailableModels", {
+    const availableModelsResponse = fetch("https://api2.cursor.sh/aiserver.v1.AiService/AvailableModels", {
       method: 'POST',
       headers: {
         'accept-encoding': 'gzip',
